@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070908">
+<meta name="description" content="Каталог манги: список, серії, статус прочитання, видавництва, ціни.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Манга">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Манга колекція</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one-screen phone app. Header on top, one scrolling list area, bottom bar with a green add button and scrolling tabs. Deliberately single dark theme: black with green accents. */
+:root{
+  --bg:#070908;
+  --surface:#101412;
+  --surface2:#171c19;
+  --line:#222a25;
+  --fg:#e8efe9;
+  --muted:#8b998f;
+  --accent:#36e07e;
+  --accent-ink:#03130a;
+  --red:#ff5d63;
+  --yellow:#f7c948;
+  --display:'Dela Gothic One','Arial Black',Impact,sans-serif;
+  --body:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --gutter-l:max(16px,env(safe-area-inset-left,0px));
+  --gutter-r:max(16px,env(safe-area-inset-right,0px));
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.35;
+  display:flex;flex-direction:column;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* Header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px var(--gutter-r) 12px var(--gutter-l);border-bottom:1px solid var(--line);background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{width:34px;height:34px;border-radius:10px;background:var(--accent);display:grid;place-items:center;flex:none}
+.mark svg{display:block}
+.word{font-family:var(--display);font-size:18px;line-height:1;letter-spacing:.01em;white-space:nowrap}
+.word span{color:var(--accent)}
+.tools{display:flex;align-items:center;gap:4px}
+.count{display:flex;flex-direction:column;align-items:flex-end;line-height:1.05;margin-right:6px;font-variant-numeric:tabular-nums}
+.count small{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.count b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--accent)}
+.icon{width:40px;height:40px;border-radius:12px;border:0;background:transparent;color:var(--fg);display:grid;place-items:center;padding:0}
+.icon:hover,.icon[aria-pressed="true"]{background:var(--surface2);color:var(--accent)}
+.searchbar{padding:10px var(--gutter-r) 10px var(--gutter-l);border-bottom:1px solid var(--line);background:var(--bg)}
+.searchbar input{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 14px;font-size:16px}
+.searchbar input:focus{border-color:var(--accent);outline:none}
+.searchbar:not([hidden]){display:block}
+
+/* Scrolling area */
+#view{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+.pg{padding-bottom:28px;min-width:0}
+.pg>*:first-child{margin-top:12px}
+.pg>.strip:first-child{margin-top:0}
+
+.rows{list-style:none;margin:0;padding:0;background:var(--surface);border-radius:18px;overflow:hidden}
+.row{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 14px 10px 8px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.idx{color:var(--muted);text-align:center;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.main{display:flex;align-items:center;gap:12px;min-width:0;background:none;border:0;padding:0;text-align:left;color:inherit}
+.main.static{cursor:default}
+.tile{width:46px;height:46px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex:none}
+.tile img{width:100%;height:100%;object-fit:contain;padding:5px}
+.tile b{font-family:var(--display);font-weight:400;color:var(--accent);font-size:18px}
+.tile.big{width:64px;height:64px;border-radius:16px}
+.meta{display:flex;flex-direction:column;min-width:0}
+.ttl{font-weight:700;font-size:16px;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:anywhere}
+.sub{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none;background:var(--red)}
+.dot.reading{background:var(--yellow)}
+.dot.read{background:var(--accent)}
+.badge{min-width:30px;height:30px;padding:0 9px;border-radius:15px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
+.price{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--fg)}
+.price.none{color:var(--muted);font-weight:600}
+
+.pill{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:16px;border:1px solid currentColor;background:transparent;font-weight:700;font-size:13px;white-space:nowrap}
+.pill.unread{color:var(--red)}
+.pill.reading{color:var(--yellow)}
+.pill.read{color:var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 10px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;font-weight:700;color:var(--muted)}
+.stat.read b{color:var(--accent)}
+.stat.reading b{color:var(--yellow)}
+.stat.unread b{color:var(--red)}
+.stat.on{border-color:currentColor;background:var(--surface2)}
+.stat.read.on{color:var(--accent)}.stat.reading.on{color:var(--yellow)}.stat.unread.on{color:var(--red)}
+.stat.on span{color:var(--fg)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:12px}
+.panel small{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.panel .big{font-family:var(--display);font-size:32px;line-height:1.15;color:var(--accent);margin:4px 0 2px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.panel p{margin:0;color:var(--muted);font-size:13px}
+
+.strip{position:sticky;top:0;z-index:3;display:flex;gap:6px;overflow-x:auto;padding:12px 0 10px;background:var(--bg);scrollbar-width:none;margin-bottom:0}
+.strip::-webkit-scrollbar{display:none}
+.chip{flex:none;min-width:42px;height:42px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
+.chip i{font-style:normal;font-size:11px;color:var(--muted);font-weight:700}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip.on i{color:var(--accent-ink)}
+.chip:disabled{color:#46524a;background:transparent;cursor:default}
+.grouphead{display:flex;justify-content:space-between;align-items:baseline;margin:4px 2px 10px;gap:8px}
+.grouphead h2{margin:0;font-family:var(--display);font-weight:400;font-size:20px}
+.grouphead span{color:var(--muted);font-size:13px;font-weight:600}
+
+.pagehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.pagehead h2{margin:0;font-family:var(--display);font-weight:400;font-size:20px}
+.btn{height:44px;padding:0 18px;border-radius:13px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.quiet{border-color:var(--line);color:var(--fg);background:var(--surface2)}
+.btn.danger{border-color:var(--red);color:var(--red);background:transparent}
+.btn.sm{height:38px;padding:0 14px;font-size:14px}
+.link{background:none;border:0;color:var(--muted);font-weight:700;text-decoration:underline;padding:6px 0}
+
+.tblwrap{overflow-x:auto;background:var(--surface);border-radius:18px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:12px 14px;font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl tr:first-child td{border-top:0}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:var(--accent);font-size:17px}
+.tbl td.logo{width:76px}
+.tbl .name{background:none;border:0;padding:0;text-align:left;font-weight:700;font-size:15px}
+.tbl tr.none .name{color:var(--muted);font-weight:600}
+h3.sec{font-family:var(--display);font-weight:400;font-size:17px;margin:22px 2px 10px}
+.lead{list-style:none;margin:0;padding:0;background:var(--surface);border-radius:18px;overflow:hidden}
+.lead li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.lead li:first-child{border-top:0}
+.lead .rk{color:var(--muted);font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.lead .rk svg{color:var(--accent);display:block;margin:auto}
+.lead .nm{font-weight:700;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lead .bar{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.lead .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.lead .n{font-family:var(--display);color:var(--accent);font-size:18px;font-variant-numeric:tabular-nums}
+
+.empty{text-align:center;padding:44px 12px 20px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty .spines{display:flex;align-items:flex-end;gap:5px;height:74px;margin-bottom:8px}
+.empty .spines i{display:block;width:16px;border-radius:4px;background:var(--surface2);border:1px solid var(--line)}
+.empty .spines i:nth-child(1){height:52px}.empty .spines i:nth-child(2){height:70px;background:var(--accent);border-color:var(--accent)}.empty .spines i:nth-child(3){height:60px}.empty .spines i:nth-child(4){height:46px;transform:rotate(14deg);transform-origin:bottom left;margin-left:6px}
+.empty h2{margin:0;font-family:var(--display);font-weight:400;font-size:22px}
+.empty p{margin:0;color:var(--muted);max-width:30ch}
+.empty .btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+
+/* Bottom bar */
+.dock{display:flex;align-items:stretch;border-top:1px solid var(--line);background:var(--surface);padding-left:var(--gutter-l);padding-right:var(--gutter-r);padding-top:6px;padding-bottom:6px;gap:4px}
+.tabrow{display:flex;overflow-x:auto;gap:2px;flex:1;min-width:0;scrollbar-width:none}
+.tabrow::-webkit-scrollbar{display:none}
+.tab,.add{flex:none;background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 4px;min-width:74px;color:var(--muted);font-size:11px;font-weight:700;border-radius:12px;position:relative}
+.tab .gl{height:22px;display:grid;place-items:center;font-weight:800;font-size:15px;line-height:1}
+.tab[aria-current="page"]{color:var(--accent)}
+.tab[aria-current="page"]::before{content:"";position:absolute;top:-6px;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+.add{min-width:64px;color:var(--fg)}
+.add .plus{width:40px;height:30px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.sep{width:1px;background:var(--line);margin:6px 2px;flex:none}
+
+/* Sheets, popover, toast */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.66);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.scrim:not([hidden]){display:flex}
+.sheet{width:100%;max-width:540px;max-height:94%;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;padding:16px var(--gutter-r) calc(20px + env(safe-area-inset-bottom,0px)) var(--gutter-l)}
+.shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.shead h3{margin:0;font-family:var(--display);font-weight:400;font-size:20px}
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;min-width:0}
+.fld>label,.fld>span{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.fld input[type=text],.fld input[type=number],.fld input[type=date],.fld select,.fld textarea,.fld input:not([type]){height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:0 14px;font-size:16px;width:100%;min-width:0}
+.fld textarea{height:130px;padding:12px 14px;resize:vertical;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--accent);outline:none}
+.fld input:disabled{opacity:.4}
+.volrow,.pubrow{display:flex;gap:10px;align-items:center}
+.volrow input{flex:1}
+.pubrow select{flex:1}
+.pubrow .icon{background:var(--surface2);border:1px solid var(--line);width:48px;height:48px;flex:none;color:var(--accent)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;flex:none;text-transform:none;letter-spacing:0;font-size:14px;color:var(--fg);font-weight:700}
+.switch input{position:absolute;opacity:0;pointer-events:none}
+.switch i{width:44px;height:26px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);position:relative;transition:background .15s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s}
+.switch input:checked+i{background:var(--accent);border-color:var(--accent)}
+.switch input:checked+i::after{transform:translateX(18px);background:var(--accent-ink)}
+.switch input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px}
+.err{margin:0 0 12px;color:var(--red);font-weight:600;font-size:14px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btns .btn{flex:1 1 140px}
+.confirm{margin-top:12px;padding:12px;border:1px solid var(--red);border-radius:14px;display:flex;flex-direction:column;gap:10px}
+.confirm p{margin:0;font-weight:600}
+.confirm .btns .btn{flex:1 1 120px}
+.logorow{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.logorow>div{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.menu-sec{padding:14px 0;border-top:1px solid var(--line)}
+.menu-sec:first-of-type{border-top:0;padding-top:0}
+.menu-sec h4{margin:0 0 4px;font-size:15px}
+.menu-sec p{margin:0 0 10px;color:var(--muted);font-size:13px}
+.syncs{display:flex;flex-direction:column;gap:6px;margin:0 0 4px}
+.syncs div{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.syncs .ok{color:var(--accent)}.syncs .warn{color:var(--yellow)}
+
+.pop{position:fixed;z-index:60;width:176px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 34px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:2px}
+.pop button{display:flex;align-items:center;gap:10px;height:42px;padding:0 12px;border:0;background:none;border-radius:10px;font-weight:700;text-align:left}
+.pop button:hover,.pop button.cur{background:var(--surface)}
+.pop button.cur{outline:1px solid var(--line)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--accent);color:var(--accent-ink);font-weight:800;padding:10px 16px;border-radius:12px;max-width:min(88vw,420px);text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>
+.note{display:flex;align-items:center;gap:10px;padding:8px var(--gutter-r) 8px var(--gutter-l);background:var(--surface2);border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--yellow)}
+.note[hidden]{display:none}
+.note span{flex:1;min-width:0}
+.note .btn{flex:none}
+html{background:var(--bg);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.mark{background:none;width:38px;height:38px;border-radius:10px;overflow:hidden}
+.mark img{width:100%;height:100%;display:block}
+.word{display:flex;flex-direction:column;gap:4px;line-height:1}
+.word b{font-family:var(--display);font-weight:400;font-size:18px;color:var(--accent);letter-spacing:.02em}
+.word small{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"><img src="icon-192.png" alt=""></span>
+    <span class="word"><b>Манга</b><small>колекція</small></span>
+  </div>
+  <div class="tools">
+    <div class="count" id="count" aria-live="polite"></div>
+    <button class="icon" id="btnSearch" aria-label="Пошук" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button>
+    <button class="icon" id="btnMenu" aria-label="Дані та бекап"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+<div class="searchbar" id="searchbar" hidden><input id="q" type="search" placeholder="Пошук за назвою" autocomplete="off" aria-label="Пошук за назвою"></div>
+<div class="note" id="note" hidden></div>
+<main id="view" tabindex="-1"></main>
+<input type="file" id="r-file-main" accept=".json,application/json" hidden>
+<nav class="dock" aria-label="Розділи">
+  <button class="add" id="btnAdd" aria-label="Додати мангу"><span class="plus"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>Додати</button>
+  <span class="sep"></span>
+  <div class="tabrow" id="tabs"></div>
+</nav>
+<div class="scrim" id="scrim" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Вікно"></div></div>
+
+<script>
+(function(){
+'use strict';
+document.documentElement.lang='uk';
+
+/* ---------- helpers ---------- */
+var $=function(s,r){return (r||document).querySelector(s)};
+var coll=new Intl.Collator('uk',{sensitivity:'base',numeric:true});
+var UA='АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯ'.split('');
+var LAT='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+var KEY='mangashelf.v1', UIKEY='mangashelf.ui';
+var ST=[{k:'unread',l:'Не прочитано'},{k:'reading',l:'Читаю'},{k:'read',l:'Прочитано'}];
+var STL={unread:'Не прочитано',reading:'Читаю',read:'Прочитано'};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function uid(){return Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4)}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(s){var p=String(s).split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:s}
+function fmtMoney(n){return Number(n).toLocaleString('uk-UA',{minimumFractionDigits:0,maximumFractionDigits:2})+' грн'}
+function pl(n,f){var a=n%10,b=n%100;if(a===1&&b!==11)return f[0];if(a>=2&&a<=4&&(b<10||b>=20))return f[1];return f[2]}
+function norm(s){return String(s).trim().replace(/\s+/g,' ').toLowerCase()}
+function str(x){return typeof x==='string'?x.trim():''}
+function ico(p,s){s=s||22;return '<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'}
+var P={
+  list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  series:'<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
+  status:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>',
+  pubs:'<path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6M9 10h.01M15 10h.01"/>',
+  recv:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  close:'<path d="M6 6l12 12M18 6 6 18"/>',
+  chev:'<path d="m6 9 6 6 6-6"/>',
+  trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8M10 17h4"/>'
+};
+
+/* ---------- state ---------- */
+var S={v:1,updatedAt:0,manga:[],pubs:[]};
+var ui={page:'list',q:'',letter:null,date:null,sf:null};
+var PM=new Map();
+var persisted=false, cloud='pending', localOk=true, dbApi=null, base='', dbTimer=null;
+
+function okLogo(x){return typeof x==='string'&&/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(x)&&x.length<60000?x:null}
+function sanitize(d){
+  if(!d||typeof d!=='object'||!Array.isArray(d.manga))return null;
+  var pubs=(Array.isArray(d.pubs)?d.pubs:[]).map(function(p){p=p||{};return {id:str(p.id)||uid(),name:str(p.name).slice(0,80),logo:okLogo(p.logo)}}).filter(function(p){return p.name});
+  var ids=new Set(pubs.map(function(p){return p.id}));
+  var manga=d.manga.map(function(m){m=m||{};
+    return {id:str(m.id)||uid(),title:str(m.title).slice(0,160),
+      vol:(Number.isInteger(m.vol)&&m.vol>0)?m.vol:null,
+      pubId:ids.has(m.pubId)?m.pubId:null,
+      price:(typeof m.price==='number'&&isFinite(m.price)&&m.price>=0)?m.price:null,
+      status:(m.status==='read'||m.status==='reading')?m.status:'unread',
+      received:/^\d{4}-\d{2}-\d{2}$/.test(m.received||'')?m.received:today()};
+  }).filter(function(m){return m.title});
+  return {v:1,updatedAt:Date.now(),manga:manga,pubs:pubs};
+}
+function loadLocal(){try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);var c=sanitize(d);if(c){c.updatedAt=typeof d.updatedAt==='number'?d.updatedAt:0;return c}}}catch(e){}return null}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S));localOk=true}catch(e){localOk=false}}
+function saveUi(){try{localStorage.setItem(UIKEY,ui.page)}catch(e){}}
+function commit(){S.updatedAt=Date.now();saveLocal();queueWrite();if(dbApi){clearTimeout(dbTimer);dbTimer=setTimeout(pushDb,900)}}
+/* ---------- storage: IndexedDB + file in app folder (OPFS) + localStorage ---------- */
+var store={db:null,err:'',status:{idb:'pending',file:'pending',ls:'pending'}};
+var LBKEY='mangashelf.lastBackup';
+function idbOpen(){return new Promise(function(res,rej){
+  if(!window.indexedDB)return rej(new Error('NoIDB'));
+  var r=indexedDB.open('mangashelf',1);
+  r.onupgradeneeded=function(){if(!r.result.objectStoreNames.contains('kv'))r.result.createObjectStore('kv')};
+  r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error||new Error('idb'))};
+})}
+function idbGet(db,k){return new Promise(function(res,rej){var q=db.transaction('kv','readonly').objectStore('kv').get(k);q.onsuccess=function(){res(q.result)};q.onerror=function(){rej(q.error)}})}
+function idbSet(db,k,v){return new Promise(function(res,rej){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res()};t.onerror=function(){rej(t.error)};t.onabort=function(){rej(t.error)}})}
+async function opfsRead(){var root=await navigator.storage.getDirectory();var fh=await root.getFileHandle('manga-data.json');var f=await fh.getFile();return JSON.parse(await f.text())}
+async function opfsWrite(text){var root=await navigator.storage.getDirectory();var fh=await root.getFileHandle('manga-data.json',{create:true});var w=await fh.createWritable();await w.write(text);await w.close()}
+var writeChain=Promise.resolve(), wTimer=null;
+function queueWrite(now){clearTimeout(wTimer);wTimer=setTimeout(function(){writeChain=writeChain.then(doWrite).catch(function(){})},now?0:250)}
+async function doWrite(){
+  var snap=JSON.stringify(S), obj=JSON.parse(snap), st=store.status;
+  try{if(!store.db)store.db=await idbOpen();await idbSet(store.db,'state',obj);st.idb='ok'}catch(e){st.idb='err';store.err=String(e&&e.name||e)}
+  try{if(navigator.storage&&navigator.storage.getDirectory){await opfsWrite(snap);st.file='ok'}else st.file='na'}
+  catch(e){st.file=(e&&(e.name==='TypeError'||e.name==='NotSupportedError'))?'na':'err';if(st.file==='err')store.err=String(e&&e.name||e)}
+  st.ls=localOk?'ok':'err';
+}
+async function loadStores(){
+  var cands=[];
+  try{store.db=await idbOpen();var v=await idbGet(store.db,'state');if(v)cands.push(v);store.status.idb='ok'}catch(e){store.status.idb='err';store.err=String(e&&e.name||e)}
+  try{
+    if(navigator.storage&&navigator.storage.getDirectory){
+      try{var v2=await opfsRead();if(v2)cands.push(v2)}catch(e){if(!e||e.name!=='NotFoundError')throw e}
+      store.status.file='ok';
+    }else store.status.file='na';
+  }catch(e){store.status.file=(e&&e.name==='TypeError')?'na':'err'}
+  var best=null;
+  cands.forEach(function(d){var c=sanitize(d);if(c){c.updatedAt=typeof d.updatedAt==='number'?d.updatedAt:0;if(!best||c.updatedAt>best.updatedAt)best=c}});
+  if(best&&best.updatedAt>S.updatedAt){S=best;render()}
+  saveLocal();store.status.ls=localOk?'ok':'err';
+  queueWrite(true);
+}
+function markBackup(){try{localStorage.setItem(LBKEY,String(Date.now()))}catch(e){}paintNote()}
+var noteHidden=false;
+function paintNote(){
+  var n=$('#note');if(!n)return;
+  var lb=0;try{lb=+localStorage.getItem(LBKEY)||0}catch(e){}
+  var old=!lb||Date.now()-lb>7*864e5;
+  var show=!noteHidden&&S.manga.length>0&&old&&!window.claude;
+  n.hidden=!show;
+  if(show){var d=Math.floor((Date.now()-lb)/864e5);
+    n.innerHTML='<span>'+(lb?'Останню копію у файл зроблено '+d+' '+pl(d,['день','дні','днів'])+' тому.':'Ще немає копії у файл.')+'</span><button class="btn sm" data-a="dl">Зберегти копію</button><button class="icon" data-a="noteX" aria-label="Сховати">'+ico(P.close,18)+'</button>';}
+}
+function bytes(s){try{return new Blob([s]).size}catch(e){return s.length*2}}
+async function pushDb(){
+  if(!dbApi)return;
+  var items={updatedAt:S.updatedAt,manga:S.manga}, pubs={updatedAt:S.updatedAt,pubs:S.pubs};
+  var a=JSON.stringify(items), b=JSON.stringify(pubs);
+  if(bytes(a)>250000||bytes(b)>250000){cloud='big';return}
+  try{await dbApi.doc(base+'items').set(items);await dbApi.doc(base+'pubs').set(pubs);cloud='ok'}catch(e){cloud='err'}
+}
+async function initDb(){
+  try{
+    if(!window.claude||!window.claude.use){cloud='none';return}
+    var r=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
+    var db=r[0],user=r[1];
+    if(!db||!user){cloud='none';return}
+    var id=await user.id();
+    if(!id){cloud='none';return}
+    base='data/users/'+id+'/';dbApi=db;
+    var g=await Promise.all([db.doc(base+'items').get(),db.doc(base+'pubs').get()]);
+    var ia=g[0].exists?g[0].data():null, pb=g[1].exists?g[1].data():null;
+    var remoteAt=(ia&&typeof ia.updatedAt==='number')?ia.updatedAt:0;
+    if(ia&&remoteAt>S.updatedAt){
+      var c=sanitize({manga:ia.manga,pubs:pb?pb.pubs:[]});
+      if(c){c.updatedAt=remoteAt;S=c;saveLocal();render()}
+      cloud='ok';
+    }else if(S.updatedAt>remoteAt){await pushDb()}
+    else cloud='ok';
+  }catch(e){cloud='err'}
+}
+
+/* ---------- derived data ---------- */
+function full(m){return m.vol!=null?m.title+' Том '+m.vol:m.title}
+function cmp(a,b){return coll.compare(a.title,b.title)||((a.vol==null?0:a.vol)-(b.vol==null?0:b.vol))}
+function sorted(){return S.manga.slice().sort(cmp)}
+function visible(list){var q=ui.q.trim().toLowerCase();return q?list.filter(function(m){return full(m).toLowerCase().indexOf(q)>-1}):list}
+function firstLetter(t){var c=(String(t).trim()[0]||'#').toUpperCase();return(UA.indexOf(c)>-1||LAT.indexOf(c)>-1)?c:'#'}
+function seriesList(){
+  var map=new Map();
+  S.manga.forEach(function(m){var k=norm(m.title);var g=map.get(k);if(!g){g={name:m.title,items:[]};map.set(k,g)}g.items.push(m)});
+  return Array.from(map.values()).sort(function(a,b){return coll.compare(a.name,b.name)});
+}
+
+/* ---------- rendering ---------- */
+function tile(letter,pub){return '<span class="tile">'+(pub&&pub.logo?'<img src="'+pub.logo+'" alt="">':'<b>'+esc(String(letter).toUpperCase())+'</b>')+'</span>'}
+function rowHtml(i,m,right){
+  var p=PM.get(m.pubId);
+  return '<li class="row"><span class="idx">'+i+'</span><button class="main" data-a="edit" data-id="'+m.id+'">'+tile((m.title[0]||'?'),p)+
+    '<span class="meta"><span class="ttl">'+esc(full(m))+'</span><span class="sub">'+esc(p?p.name:'Без видавництва')+'</span></span></button>'+(right||'')+'</li>';
+}
+function dotHtml(m){return '<span class="dot '+m.status+'" title="'+STL[m.status]+'" role="img" aria-label="'+STL[m.status]+'"></span>'}
+function pillHtml(m){return '<button class="pill '+m.status+'" data-a="pop" data-id="'+m.id+'" aria-haspopup="menu">'+STL[m.status]+ico(P.chev,14)+'</button>'}
+function emptyAll(){
+  return '<div class="empty"><div class="spines" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h2>Полиця порожня</h2><p>Додайте перший том. Він одразу з’явиться у списку, серіях і статистиці.</p>'+
+    '<div class="btns"><button class="btn" data-a="add">'+ico(P.plus,20)+' Додати мангу</button><button class="btn ghost" data-a="sample">Показати приклад</button><button class="btn quiet" data-a="restoreFile">Відновити з файлу</button></div></div>';
+}
+function emptyFound(){return '<div class="empty"><h2>Нічого не знайдено</h2><p>Спробуйте іншу назву або очистьте пошук.</p></div>'}
+function listOrEmpty(items,mk){
+  if(!S.manga.length)return emptyAll();
+  if(!items.length)return emptyFound();
+  return '<ul class="rows">'+items.map(mk).join('')+'</ul>';
+}
+
+var pages={
+  list:function(){
+    var items=visible(sorted());
+    return '<div class="pg">'+listOrEmpty(items,function(m,i){return rowHtml(i+1,m,dotHtml(m))})+'</div>';
+  },
+  series:function(){
+    var q=ui.q.trim().toLowerCase();
+    var items=seriesList().filter(function(g){return !q||g.name.toLowerCase().indexOf(q)>-1});
+    return '<div class="pg">'+listOrEmpty(items,function(g,i){
+      var n=g.items.length, one=(n===1&&g.items[0].vol==null);
+      var rd=g.items.filter(function(m){return m.status==='read'}).length;
+      var sub=(one?'Однотомник':n+' '+pl(n,['том','томи','томів']))+' · прочитано '+rd+' з '+n;
+      return '<li class="row"><span class="idx">'+(i+1)+'</span><div class="main static">'+tile(g.name[0]||'?',null)+'<span class="meta"><span class="ttl">'+esc(g.name)+'</span><span class="sub">'+esc(sub)+'</span></span></div><span class="badge">'+n+'</span></li>';
+    })+'</div>';
+  },
+  alpha:function(){
+    if(!S.manga.length)return '<div class="pg">'+emptyAll()+'</div>';
+    var by=new Map();
+    S.manga.forEach(function(m){var L=firstLetter(m.title);by.set(L,(by.get(L)||0)+1)});
+    var letters=UA.concat(LAT,['#']);
+    if(!ui.letter||!by.has(ui.letter))ui.letter=letters.filter(function(l){return by.has(l)})[0]||null;
+    var strip='<div class="strip" id="strip" role="group" aria-label="Літери">'+letters.map(function(l){
+      var n=by.get(l)||0;
+      return '<button class="chip'+(l===ui.letter?' on':'')+'" data-a="letter" data-v="'+l+'"'+(n?'':' disabled')+'>'+l+(n?'<i>'+n+'</i>':'')+'</button>';
+    }).join('')+'</div>';
+    var items=visible(sorted().filter(function(m){return firstLetter(m.title)===ui.letter}));
+    var head='<div class="grouphead"><h2>'+esc(ui.letter||'')+'</h2><span>'+items.length+' '+pl(items.length,['манга','манги','манги'])+'</span></div>';
+    return '<div class="pg">'+strip+head+(items.length?'<ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m))}).join('')+'</ul>':emptyFound())+'</div>';
+  },
+  status:function(){
+    var c={read:0,reading:0,unread:0};
+    S.manga.forEach(function(m){c[m.status]++});
+    var stats='<div class="stats">'+[['read','Прочитано'],['reading','Читаю'],['unread','Не прочитано']].map(function(x){
+      return '<button class="stat '+x[0]+(ui.sf===x[0]?' on':'')+'" data-a="sf" data-v="'+x[0]+'" aria-pressed="'+(ui.sf===x[0])+'"><b>'+c[x[0]]+'</b><span>'+x[1]+'</span></button>';
+    }).join('')+'</div>';
+    var items=visible(sorted());
+    if(ui.sf)items=items.filter(function(m){return m.status===ui.sf});
+    return '<div class="pg">'+stats+listOrEmpty(items,function(m,i){return rowHtml(i+1,m,pillHtml(m))})+'</div>';
+  },
+  pubs:function(){
+    var cnt=new Map(), none=0;
+    S.manga.forEach(function(m){if(m.pubId&&PM.has(m.pubId))cnt.set(m.pubId,(cnt.get(m.pubId)||0)+1);else none++});
+    var head='<div class="pagehead"><h2>Видавництва</h2><button class="btn ghost sm" data-a="addPub">'+ico(P.plus,18)+' Додати видавництво</button></div>';
+    var plist=S.pubs.slice().sort(function(a,b){return coll.compare(a.name,b.name)});
+    if(!plist.length)return '<div class="pg">'+head+'<div class="empty"><h2>Ще немає видавництв</h2><p>Додайте перше, щоб обирати його під час додавання манги.</p></div></div>';
+    var rows=plist.map(function(p){
+      return '<tr><td class="logo">'+tile(p.name[0]||'?',p)+'</td><td><button class="name" data-a="editPub" data-id="'+p.id+'">'+esc(p.name)+'</button></td><td class="num">'+(cnt.get(p.id)||0)+'</td></tr>';
+    }).join('');
+    if(none)rows+='<tr class="none"><td class="logo"><span class="tile"><b>?</b></span></td><td><span class="name">Без видавництва</span></td><td class="num">'+none+'</td></tr>';
+    var table='<div class="tblwrap"><table class="tbl"><thead><tr><th>Логотип</th><th>Назва</th><th class="num" style="text-align:right">У колекції</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    var lead=plist.map(function(p){return {p:p,n:cnt.get(p.id)||0}}).filter(function(x){return x.n>0}).sort(function(a,b){return b.n-a.n||coll.compare(a.p.name,b.p.name)});
+    var max=lead.length?lead[0].n:1;
+    var board=lead.length?'<h3 class="sec">Лідери колекції</h3><ol class="lead">'+lead.map(function(x,i){
+      return '<li><span class="rk">'+(i===0?ico(P.trophy,22):(i+1))+'</span><div><div class="nm">'+esc(x.p.name)+'</div><div class="bar"><i style="width:'+Math.max(4,Math.round(x.n/max*100))+'%"></i></div></div><span class="n">'+x.n+'</span></li>';
+    }).join('')+'</ol>':'';
+    return '<div class="pg">'+head+table+board+'</div>';
+  },
+  price:function(){
+    var total=0,withP=0;
+    S.manga.forEach(function(m){if(m.price!=null){total+=m.price;withP++}});
+    var avg=withP?total/withP:0;
+    var panel='<div class="panel"><small>Вартість колекції</small><div class="big">'+fmtMoney(Math.round(total*100)/100)+'</div><p>'+withP+' з '+S.manga.length+' позицій мають ціну'+(withP?' · середня '+fmtMoney(Math.round(avg*100)/100):'')+'</p></div>';
+    var items=visible(sorted());
+    return '<div class="pg">'+panel+listOrEmpty(items,function(m,i){
+      return rowHtml(i+1,m,'<span class="price'+(m.price==null?' none':'')+'">'+(m.price==null?'—':fmtMoney(m.price))+'</span>');
+    })+'</div>';
+  },
+  recv:function(){
+    if(!S.manga.length)return '<div class="pg">'+emptyAll()+'</div>';
+    var by=new Map();
+    S.manga.forEach(function(m){by.set(m.received,(by.get(m.received)||0)+1)});
+    var dates=Array.from(by.keys()).sort().reverse();
+    if(!ui.date||!by.has(ui.date))ui.date=dates[0];
+    var strip='<div class="strip" id="strip" role="group" aria-label="Дати отримання">'+dates.map(function(d){
+      return '<button class="chip'+(d===ui.date?' on':'')+'" data-a="date" data-v="'+d+'">'+fmtDate(d)+'<i>'+by.get(d)+'</i></button>';
+    }).join('')+'</div>';
+    var items=visible(sorted().filter(function(m){return m.received===ui.date}));
+    var head='<div class="grouphead"><h2>'+fmtDate(ui.date)+'</h2><span>'+items.length+' '+pl(items.length,['манга','манги','манги'])+'</span></div>';
+    return '<div class="pg">'+strip+head+(items.length?'<ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m))}).join('')+'</ul>':emptyFound())+'</div>';
+  }
+};
+var TABS=[
+  ['list','Список',ico(P.list)],
+  ['series','Серії',ico(P.series)],
+  ['alpha','По алфавіту','<span class="gl">А–Я</span>'],
+  ['status','Статус',ico(P.status)],
+  ['pubs','Видавництва',ico(P.pubs)],
+  ['price','Ціна','<span class="gl">₴</span>'],
+  ['recv','Отримана',ico(P.recv)]
+];
+function headCount(){
+  switch(ui.page){
+    case 'series':return ['Серій',seriesList().length];
+    case 'pubs':return ['Видавництв',S.pubs.length];
+    default:return ['Манга',S.manga.length];
+  }
+}
+function render(keep){
+  PM=new Map(S.pubs.map(function(p){return [p.id,p]}));
+  var v=$('#view'), st=v.scrollTop, strip=$('#strip'), sl=strip?strip.scrollLeft:0;
+  v.innerHTML=pages[ui.page]();
+  v.scrollTop=keep?st:0;
+  var ns=$('#strip');
+  if(ns){
+    if(keep){ns.scrollLeft=sl}
+    else{var on=ns.querySelector('.chip.on');if(on)ns.scrollLeft=Math.max(0,on.offsetLeft-ns.clientWidth/2+on.offsetWidth/2)}
+  }
+  $('#tabs').innerHTML=TABS.map(function(t){return '<button class="tab" data-a="tab" data-v="'+t[0]+'"'+(t[0]===ui.page?' aria-current="page"':'')+'>'+t[2]+t[1]+'</button>'}).join('');
+  var hc=headCount();
+  $('#count').innerHTML='<small>'+hc[0]+'</small><b>'+hc[1]+'</b>';
+  $('#btnSearch').hidden=ui.page==='pubs';
+  if(ui.page==='pubs'){$('#searchbar').hidden=true;$('#btnSearch').setAttribute('aria-pressed','false')}
+  paintNote();
+  var cur=$('.tab[aria-current="page"]'),tr=$('#tabs');
+  if(cur&&!keep){tr.scrollLeft=Math.max(0,cur.offsetLeft-tr.clientWidth/2+cur.offsetWidth/2)}
+}
+
+/* ---------- toast ---------- */
+var toastT=null;
+function toast(msg){
+  var t=$('#toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','status');document.body.appendChild(t)}
+  t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},2400);
+}
+
+/* ---------- status popover ---------- */
+function closePop(){var p=$('#pop');if(p)p.remove()}
+function openPop(btn,id){
+  closePop();
+  var m=S.manga.find(function(x){return x.id===id});if(!m)return;
+  var pop=document.createElement('div');pop.className='pop';pop.id='pop';pop.setAttribute('role','menu');
+  pop.innerHTML=ST.map(function(s){return '<button role="menuitem" data-a="setStatus" data-id="'+id+'" data-v="'+s.k+'"'+(m.status===s.k?' class="cur"':'')+'><span class="dot '+s.k+'"></span>'+s.l+'</button>'}).join('');
+  document.body.appendChild(pop);
+  var r=btn.getBoundingClientRect(),w=176,h=pop.offsetHeight;
+  var left=Math.min(Math.max(8,r.right-w),window.innerWidth-w-8);
+  var top=r.bottom+6;if(top+h>window.innerHeight-8)top=Math.max(8,r.top-h-6);
+  pop.style.left=left+'px';pop.style.top=top+'px';
+  var f=pop.querySelector('button');if(f)f.focus();
+}
+
+/* ---------- sheets ---------- */
+var sheetCtx=null, stash=null, pubDraft=null, pendingRestore=null, delArmed=false;
+function openSheet(html,focusSel){
+  var sc=$('#scrim');$('#sheet').innerHTML=html;sc.hidden=false;
+  var f=focusSel&&$(focusSel);if(f)setTimeout(function(){f.focus()},30);
+}
+function closeSheet(){$('#scrim').hidden=true;$('#sheet').innerHTML='';sheetCtx=null;pendingRestore=null}
+function closeBtn(){return '<button class="icon" data-a="close" aria-label="Закрити">'+ico(P.close)+'</button>'}
+
+function mangaSheet(d,editId){
+  sheetCtx={type:'manga',editId:editId||null};
+  var pubs=S.pubs.slice().sort(function(a,b){return coll.compare(a.name,b.name)});
+  var titles=Array.from(new Set(S.manga.map(function(m){return m.title}))).sort(coll.compare.bind(coll));
+  var opts='<option value="">Не вказано</option>'+pubs.map(function(p){return '<option value="'+p.id+'"'+(p.id===d.pubId?' selected':'')+'>'+esc(p.name)+'</option>'}).join('');
+  openSheet(
+    '<div class="shead"><h3>'+(editId?'Редагувати мангу':'Додати мангу')+'</h3>'+closeBtn()+'</div>'+
+    '<form id="mform" novalidate>'+
+      '<div class="fld"><label for="f-title">Назва манги</label><input id="f-title" type="text" list="titles" value="'+esc(d.title)+'" autocomplete="off" placeholder="Наприклад, Берсерк"></div>'+
+      '<datalist id="titles">'+titles.map(function(t){return '<option value="'+esc(t)+'"></option>'}).join('')+'</datalist>'+
+      '<div class="fld"><label for="f-vol">Номер тому</label><div class="volrow"><input id="f-vol" type="number" inputmode="numeric" min="1" step="1" value="'+(d.one?'':esc(d.vol))+'" placeholder="1"'+(d.one?' disabled':'')+'>'+
+        '<label class="switch"><input type="checkbox" id="f-one"'+(d.one?' checked':'')+'><i></i>Однотомник</label></div></div>'+
+      '<div class="fld"><label for="f-pub">Видавництво</label><div class="pubrow"><select id="f-pub">'+opts+'</select><button type="button" class="icon" data-a="pubFromManga" aria-label="Додати видавництво">'+ico(P.plus)+'</button></div></div>'+
+      '<div class="two"><div class="fld"><label for="f-price">Ціна, грн</label><input id="f-price" type="number" inputmode="decimal" min="0" step="0.01" value="'+esc(d.price)+'" placeholder="0"></div>'+
+      '<div class="fld"><label for="f-date">Отримано</label><input id="f-date" type="date" value="'+esc(d.received)+'"></div></div>'+
+      '<p class="err" id="ferr" role="alert" hidden></p>'+
+      '<div class="btns"><button type="submit" class="btn">'+(editId?'Зберегти':'Додати')+'</button>'+
+        (editId?'<button type="button" class="btn danger" data-a="askDel">Видалити</button>':'<button type="button" class="btn ghost" data-a="addNext">Додати й наступний том</button>')+'</div>'+
+      '<div class="confirm" id="delbox" hidden><p>Видалити цей том із колекції?</p><div class="btns"><button type="button" class="btn danger" data-a="doDel">Так, видалити</button><button type="button" class="btn quiet" data-a="cancelDel">Скасувати</button></div></div>'+
+    '</form>',
+    editId?'#f-title':'#f-title');
+}
+function readMangaForm(){
+  return {title:$('#f-title').value,one:$('#f-one').checked,vol:$('#f-vol').value,pubId:$('#f-pub').value,price:$('#f-price').value,received:$('#f-date').value};
+}
+function openManga(id,draft){
+  var m=id?S.manga.find(function(x){return x.id===id}):null;
+  var d=draft||(m?{title:m.title,vol:m.vol==null?'':m.vol,one:m.vol==null,pubId:m.pubId||'',price:m.price==null?'':m.price,received:m.received}:{title:'',vol:'',one:false,pubId:'',price:'',received:today()});
+  mangaSheet(d,id);
+}
+function fail(msg,id){var e=$('#ferr');e.textContent=msg;e.hidden=false;var f=id&&$('#'+id);if(f)f.focus();return false}
+function submitManga(mode){
+  var d=readMangaForm(), editId=sheetCtx&&sheetCtx.editId;
+  var title=d.title.trim().replace(/\s+/g,' ');
+  if(!title)return fail('Введіть назву манги.','f-title');
+  var vol=null;
+  if(!d.one){
+    var n=Number(d.vol);
+    if(!String(d.vol).trim()||!Number.isInteger(n)||n<1)return fail('Вкажіть номер тому цілим числом або увімкніть «Однотомник».','f-vol');
+    vol=n;
+  }
+  var price=null;
+  if(String(d.price).trim()!==''){
+    var p=Number(String(d.price).replace(',','.'));
+    if(!isFinite(p)||p<0)return fail('Ціна має бути числом, наприклад 249.50.','f-price');
+    price=Math.round(p*100)/100;
+  }
+  var dup=S.manga.some(function(x){return x.id!==editId&&norm(x.title)===norm(title)&&(x.vol==null?null:x.vol)===vol});
+  if(dup)return fail('Такий том уже є в колекції.','f-title');
+  var rec=d.received||today();
+  var pubId=d.pubId&&PM.has(d.pubId)?d.pubId:null;
+  if(editId){
+    var m=S.manga.find(function(x){return x.id===editId});
+    if(m){m.title=title;m.vol=vol;m.pubId=pubId;m.price=price;m.received=rec}
+    toast('Збережено');
+  }else{
+    S.manga.push({id:uid(),title:title,vol:vol,pubId:pubId,price:price,status:'unread',received:rec});
+    toast('Додано: '+(vol!=null?title+' Том '+vol:title));
+  }
+  commit();
+  if(!editId&&mode==='next'&&vol!=null){
+    render(true);
+    mangaSheet({title:title,vol:vol+1,one:false,pubId:pubId||'',price:price==null?'':price,received:rec},null);
+    var b=$('#mform .btn');if(b)b.focus();
+    return true;
+  }
+  closeSheet();render(true);return true;
+}
+
+function pubSheet(d,editId,ret){
+  sheetCtx={type:'pub',editId:editId||null,ret:ret||null};
+  pubDraft={logo:d.logo||null};
+  var used=editId?S.manga.filter(function(m){return m.pubId===editId}).length:0;
+  openSheet(
+    '<div class="shead"><h3>'+(editId?'Редагувати видавництво':'Нове видавництво')+'</h3>'+closeBtn()+'</div>'+
+    '<form id="pform" novalidate>'+
+      '<div class="logorow"><span class="tile big" id="p-prev"></span><div><label class="btn ghost sm" for="p-file">Завантажити логотип</label><input id="p-file" type="file" accept="image/*" hidden><button type="button" class="link" data-a="rmLogo">Прибрати логотип</button></div></div>'+
+      '<div class="fld"><label for="p-name">Назва видавництва</label><input id="p-name" type="text" value="'+esc(d.name||'')+'" autocomplete="off" placeholder="Назва"></div>'+
+      '<p class="err" id="ferr" role="alert" hidden></p>'+
+      '<div class="btns"><button type="submit" class="btn">'+(editId?'Зберегти':'Додати')+'</button>'+(editId?'<button type="button" class="btn danger" data-a="askDel">Видалити</button>':'')+'</div>'+
+      (editId?'<div class="confirm" id="delbox" hidden><p>Видалити видавництво?'+(used?' Манга ('+used+') залишиться без видавництва.':'')+'</p><div class="btns"><button type="button" class="btn danger" data-a="doDelPub">Так, видалити</button><button type="button" class="btn quiet" data-a="cancelDel">Скасувати</button></div></div>':'')+
+    '</form>','#p-name');
+  paintPrev();
+}
+function paintPrev(){
+  var n=($('#p-name')&&$('#p-name').value.trim()[0])||'?';
+  $('#p-prev').innerHTML=pubDraft.logo?'<img src="'+pubDraft.logo+'" alt="Логотип">':'<b>'+esc(n.toUpperCase())+'</b>';
+}
+function fileToLogo(file){
+  return new Promise(function(res,rej){
+    var fr=new FileReader();
+    fr.onerror=function(){rej()};
+    fr.onload=function(){
+      var img=new Image();
+      img.onerror=function(){rej()};
+      img.onload=function(){
+        var N=72,c=document.createElement('canvas');c.width=c.height=N;
+        var x=c.getContext('2d'),w0=img.naturalWidth||N,h0=img.naturalHeight||N;
+        var s=Math.min(N/w0,N/h0),w=w0*s,h=h0*s;
+        x.drawImage(img,(N-w)/2,(N-h)/2,w,h);
+        try{res(c.toDataURL('image/png'))}catch(e){rej()}
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function submitPub(){
+  var name=$('#p-name').value.trim().replace(/\s+/g,' ');
+  if(!name)return fail('Введіть назву видавництва.','p-name');
+  var editId=sheetCtx.editId;
+  if(S.pubs.some(function(p){return p.id!==editId&&norm(p.name)===norm(name)}))return fail('Таке видавництво вже є.','p-name');
+  var id=editId;
+  if(editId){var p=S.pubs.find(function(x){return x.id===editId});if(p){p.name=name;p.logo=pubDraft.logo}}
+  else{id=uid();S.pubs.push({id:id,name:name,logo:pubDraft.logo})}
+  commit();toast(editId?'Збережено':'Видавництво додано');
+  var ret=sheetCtx.ret;
+  if(ret==='manga'&&stash){render(true);var d=stash.d;d.pubId=id;var e=stash.editId;stash=null;mangaSheet(d,e);return true}
+  closeSheet();render(true);return true;
+}
+
+function cloudLine(){
+  if(!window.claude){
+    var st=store.status,line=function(t,k){return k==='ok'?'<div class="ok">✓ '+t+'</div>':k==='pending'?'<div class="warn">Перевіряю: '+t+'…</div>':k==='na'?'':'<div class="warn">! '+t+': помилка</div>'};
+    var okN=['idb','file','ls'].filter(function(k){return st[k]==='ok'}).length;
+    var lb=0;try{lb=+localStorage.getItem(LBKEY)||0}catch(e){}
+    var h=line('База даних застосунку',st.idb)+line('Файл manga-data.json у папці застосунку',st.file)+line('Запасна копія в браузері',st.ls);
+    if(!okN&&st.idb!=='pending')h+='<div class="warn">Дані не зберігаються. Зробіть копію у файл і напишіть мені, що показує помилка'+(store.err?' ('+esc(store.err)+')':'')+'</div>';
+    else if(store.err)h+='<div class="warn">Частина сховищ дала помилку: '+esc(store.err)+'</div>';
+    h+=persisted?'<div class="ok">✓ Захищено від автоочищення</div>':'<div class="warn">Браузер може очистити дані. Робіть копію у файл</div>';
+    h+='<div>Остання копія у файл: '+(lb?esc(new Date(lb).toLocaleString('uk-UA')):'ще не робили')+'</div>';
+    return '<div class="syncs">'+h+'</div>';
+  }
+  var a=localOk?'<div class="ok">✓ У браузері на цьому пристрої</div>':'<div class="warn">! Браузер не дозволяє зберігати. Зробіть бекап</div>';
+  var b;
+  if(cloud==='ok')b='<div class="ok">✓ У вашому акаунті Claude</div>';
+  else if(cloud==='big')b='<div class="warn">! Дані завеликі для акаунта. Зробіть бекап</div>';
+  else if(cloud==='err')b='<div class="warn">! Збереження в акаунті не вдалося. Зробіть бекап</div>';
+  else if(cloud==='pending')b='<div class="warn">Перевіряю збереження в акаунті…</div>';
+  else b='<div class="warn">Збереження в акаунті недоступне в цьому вікні</div>';
+  return '<div class="syncs">'+a+b+'</div>';
+}
+function menuSheet(){
+  sheetCtx={type:'menu'};
+  openSheet(
+    '<div class="shead"><h3>Дані та бекап</h3>'+closeBtn()+'</div>'+
+    '<div class="menu-sec"><h4>Автозбереження</h4><p>Кожна зміна зберігається одразу.</p>'+cloudLine()+'</div>'+
+    '<div class="menu-sec"><h4>Зробити бекап</h4><p>Файл із колекцією та логотипами потрапить у папку «Завантаження» на телефоні. Щоб відновити, оберіть його нижче або на порожній полиці.</p><div class="btns"><button class="btn" data-a="dl">Завантажити бекап</button><button class="btn ghost" data-a="copyBackup">Скопіювати текстом</button></div>'+
+      '<div class="fld" id="bk-wrap" hidden style="margin-top:12px"><label for="bk-text">Текст бекапу</label><textarea id="bk-text" readonly></textarea></div></div>'+
+    '<div class="menu-sec"><h4>Відновити з бекапу</h4><p>Поточні дані буде замінено.</p><div class="btns"><label class="btn ghost" for="r-file" tabindex="0">Обрати файл</label><input type="file" id="r-file" accept=".json,application/json" hidden><button class="btn quiet" data-a="pasteOpen">Вставити текст</button></div>'+
+      '<div class="fld" id="paste-wrap" hidden style="margin-top:12px"><label for="r-text">Вставте текст бекапу</label><textarea id="r-text" placeholder="{ ... }"></textarea><button class="btn sm" data-a="restoreText" style="margin-top:8px">Перевірити бекап</button></div>'+
+      '<p class="err" id="ferr" role="alert" hidden></p>'+
+      '<div class="confirm" id="rbox" hidden><p id="rmsg"></p><div class="btns"><button class="btn" data-a="doRestore">Замінити дані</button><button class="btn quiet" data-a="cancelRestore">Скасувати</button></div></div></div>'+
+    '<div class="menu-sec"><h4>Очистити все</h4><p>Видалить усю мангу та видавництва.</p><button class="btn danger sm" data-a="askWipe">Видалити всі дані</button>'+
+      '<div class="confirm" id="wbox" hidden><p>Видалити всю колекцію? Це не можна скасувати.</p><div class="btns"><button class="btn danger" data-a="doWipe">Так, видалити все</button><button class="btn quiet" data-a="cancelWipe">Скасувати</button></div></div></div>'
+  );
+}
+function backupObj(){return {app:'manga-polytsia',v:1,exportedAt:new Date().toISOString(),manga:S.manga,pubs:S.pubs}}
+async function doDownload(){
+  var text=JSON.stringify(backupObj(),null,1);
+  if(!window.claude){
+    try{
+      var bl=new Blob([text],{type:'application/json'}),u=URL.createObjectURL(bl),a=document.createElement('a');
+      a.href=u;a.download='manga-backup-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){URL.revokeObjectURL(u)},5000);markBackup();toast('Копію збережено у «Завантаження»');return;
+    }catch(e){showBackupText(text);return}
+  }
+  var dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
+  if(!dl){showBackupText(text);return}
+  try{await dl.save({filename:'manga-backup-'+today()+'.json',data:text});markBackup();toast('Бекап збережено')}
+  catch(e){if(e&&e.code==='declined')return;showBackupText(text);}
+}
+function showBackupText(text){
+  var w=$('#bk-wrap');if(!w)return;w.hidden=false;var t=$('#bk-text');t.value=text;t.focus();t.select();
+  toast('Скопіюйте текст і збережіть у нотатках');
+}
+async function copyBackup(){
+  var text=JSON.stringify(backupObj());
+  try{await navigator.clipboard.writeText(text);toast('Бекап скопійовано');}
+  catch(e){showBackupText(text)}
+}
+function prepRestore(text){
+  var e=$('#ferr');e.hidden=true;
+  var d=null;try{d=JSON.parse(text)}catch(x){}
+  var c=sanitize(d);
+  if(!c){e.textContent='Це не схоже на бекап Манга-полиці.';e.hidden=false;return}
+  pendingRestore=c;
+  $('#rmsg').textContent='У бекапі '+c.manga.length+' '+pl(c.manga.length,['позиція','позиції','позицій'])+' і '+c.pubs.length+' '+pl(c.pubs.length,['видавництво','видавництва','видавництв'])+'. Замінити поточні дані?';
+  $('#rbox').hidden=false;
+}
+
+/* ---------- sample data ---------- */
+function loadSample(){
+  var a=uid(),b=uid();
+  S.pubs=[{id:a,name:'Видавництво А (приклад)',logo:null},{id:b,name:'Видавництво Б (приклад)',logo:null}];
+  var t=today();
+  S.manga=[
+    {id:uid(),title:'Атака Титанів',vol:1,pubId:a,price:289,status:'read',received:t},
+    {id:uid(),title:'Атака Титанів',vol:2,pubId:a,price:289,status:'reading',received:t},
+    {id:uid(),title:'Атака Титанів',vol:3,pubId:a,price:299,status:'unread',received:t},
+    {id:uid(),title:'Берсерк',vol:1,pubId:b,price:349,status:'read',received:'2026-09-20'},
+    {id:uid(),title:'Берсерк',vol:2,pubId:b,price:349,status:'unread',received:'2026-09-20'},
+    {id:uid(),title:'Ванпанчмен',vol:1,pubId:a,price:259,status:'unread',received:'2026-08-14'},
+    {id:uid(),title:'Вічний дзвін',vol:null,pubId:b,price:420,status:'unread',received:'2026-08-14'}
+  ];
+  commit();render();toast('Додано приклад. Видалити його можна в меню');
+}
+
+/* ---------- events ---------- */
+var A={
+  tab:function(el){ui.page=el.dataset.v;saveUi();closePop();render()},
+  add:function(){openManga(null)},
+  edit:function(el){openManga(el.dataset.id)},
+  letter:function(el){ui.letter=el.dataset.v;render(true)},
+  date:function(el){ui.date=el.dataset.v;render(true)},
+  sf:function(el){ui.sf=ui.sf===el.dataset.v?null:el.dataset.v;render(true)},
+  pop:function(el){var p=$('#pop');if(p&&p.dataset.for===el.dataset.id){closePop();return}openPop(el,el.dataset.id);var n=$('#pop');if(n)n.dataset.for=el.dataset.id},
+  setStatus:function(el){var m=S.manga.find(function(x){return x.id===el.dataset.id});if(m){m.status=el.dataset.v;commit();closePop();render(true)}},
+  addPub:function(){pubSheet({name:'',logo:null},null,null)},
+  editPub:function(el){var p=S.pubs.find(function(x){return x.id===el.dataset.id});if(p)pubSheet(p,p.id,null)},
+  pubFromManga:function(){stash={d:readMangaForm(),editId:sheetCtx.editId};pubSheet({name:'',logo:null},null,'manga')},
+  close:function(){
+    if(sheetCtx&&sheetCtx.type==='pub'&&sheetCtx.ret==='manga'&&stash){var d=stash.d,e=stash.editId;stash=null;mangaSheet(d,e);return}
+    stash=null;closeSheet();
+  },
+  rmLogo:function(){pubDraft.logo=null;paintPrev()},
+  askDel:function(){$('#delbox').hidden=false;var b=$('#delbox .btn');if(b)b.focus()},
+  cancelDel:function(){$('#delbox').hidden=true},
+  doDel:function(){var id=sheetCtx.editId;S.manga=S.manga.filter(function(m){return m.id!==id});commit();closeSheet();render(true);toast('Видалено')},
+  doDelPub:function(){var id=sheetCtx.editId;S.pubs=S.pubs.filter(function(p){return p.id!==id});S.manga.forEach(function(m){if(m.pubId===id)m.pubId=null});commit();closeSheet();render(true);toast('Видавництво видалено')},
+  addNext:function(){submitManga('next')},
+  sample:function(){loadSample()},
+  restoreFile:function(){var i=$('#r-file-main');if(i)i.click()},
+  noteX:function(){noteHidden=true;paintNote()},
+  dl:function(){doDownload()},
+  copyBackup:function(){copyBackup()},
+  pasteOpen:function(){var w=$('#paste-wrap');w.hidden=!w.hidden;if(!w.hidden)$('#r-text').focus()},
+  restoreText:function(){prepRestore($('#r-text').value)},
+  cancelRestore:function(){pendingRestore=null;$('#rbox').hidden=true},
+  doRestore:function(){
+    if(!pendingRestore)return;
+    S=pendingRestore;pendingRestore=null;ui.letter=null;ui.date=null;commit();closeSheet();render();toast('Дані відновлено');
+  },
+  askWipe:function(){$('#wbox').hidden=false},
+  cancelWipe:function(){$('#wbox').hidden=true},
+  doWipe:function(){S.manga=[];S.pubs=[];ui.letter=null;ui.date=null;commit();closeSheet();render();toast('Колекцію очищено')}
+};
+document.addEventListener('click',function(e){
+  var pop=$('#pop');
+  if(pop&&!pop.contains(e.target)&&!e.target.closest('[data-a="pop"]'))closePop();
+  if(e.target.id==='scrim'){A.close();return}
+  var el=e.target.closest('[data-a]');
+  if(!el||!A[el.dataset.a])return;
+  A[el.dataset.a](el,e);
+});
+document.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(e.target.id==='mform')submitManga('close');
+  else if(e.target.id==='pform')submitPub();
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='f-one'){var v=$('#f-vol');v.disabled=t.checked;if(t.checked)v.value='';else v.focus()}
+  else if(t.id==='p-file'&&t.files&&t.files[0]){
+    fileToLogo(t.files[0]).then(function(url){pubDraft.logo=url;paintPrev()}).catch(function(){fail('Не вдалося прочитати зображення.')});
+    t.value='';
+  }
+  else if(t.id==='r-file-main'&&t.files&&t.files[0]){
+    t.files[0].text().then(function(txt){
+      var d=null;try{d=JSON.parse(txt)}catch(x){}
+      var c=sanitize(d);if(!c){toast('Це не схоже на файл копії');return}
+      S=c;ui.letter=null;ui.date=null;commit();render();toast('Дані відновлено');
+    }).catch(function(){toast('Не вдалося прочитати файл')});
+    t.value='';
+  }
+  else if(t.id==='r-file'&&t.files&&t.files[0]){
+    var f=t.files[0];
+    f.text().then(function(txt){prepRestore(txt)}).catch(function(){var e2=$('#ferr');e2.textContent='Не вдалося прочитати файл.';e2.hidden=false});
+    t.value='';
+  }
+});
+document.addEventListener('input',function(e){
+  if(e.target.id==='p-name'&&!pubDraft.logo)paintPrev();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if($('#pop')){closePop();return}
+    if(!$('#scrim').hidden){A.close();return}
+  }
+  if(e.key==='Enter'&&e.target.tagName==='LABEL'&&e.target.htmlFor){var i=document.getElementById(e.target.htmlFor);if(i)i.click()}
+});
+$('#view').addEventListener('scroll',closePop,{passive:true});
+$('#btnAdd').addEventListener('click',function(){openManga(null)});
+$('#btnMenu').addEventListener('click',menuSheet);
+$('#btnSearch').addEventListener('click',function(){
+  var sb=$('#searchbar'),open=sb.hidden;
+  sb.hidden=!open;this.setAttribute('aria-pressed',String(open));
+  if(open)$('#q').focus();else{ui.q='';$('#q').value='';render(true)}
+});
+$('#q').addEventListener('input',function(){ui.q=this.value;render(true)});
+
+/* ---------- boot ---------- */
+var l=loadLocal();if(l)S=l;
+try{var pg=localStorage.getItem(UIKEY);if(pg&&pages[pg])ui.page=pg}catch(e){}
+render();
+initDb();
+loadStores();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(r){persisted=!!r}).catch(function(){})}catch(e){}
+try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}
+})();
+</script>
+</body>
+</html>
