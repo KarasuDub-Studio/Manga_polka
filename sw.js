@@ -1,5 +1,5 @@
 /* Манга колекція: офлайн-кеш. Збільште VERSION, коли оновлюєте файли. */
-const VERSION='manga-v3';
+const VERSION='manga-v8p1';
 const SHELL=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','maskable-512.png','apple-touch-icon.png','splash.jpg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>Promise.all(SHELL.map(u=>c.add(u).catch(()=>null)))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==VERSION&&n!=='fonts').map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
