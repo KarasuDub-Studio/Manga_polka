@@ -79,7 +79,7 @@ button{cursor:pointer}
 .row.stack>.idx{align-self:start;padding-top:14px}
 @media (max-width:520px){
 .row.pillrow{grid-template-columns:26px minmax(0,1fr)}
-.row.pillrow>.pill{grid-column:2;justify-self:start}
+.row.pillrow>.pillgrp{grid-column:2;justify-self:start}
 .row.pillrow>.idx{align-self:start;padding-top:14px}
 }
 .idx{color:var(--muted);text-align:center;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
@@ -239,6 +239,56 @@ h3.sec{font-family:var(--display);font-weight:400;font-size:17px;margin:22px 2px
 .wnote.bad{color:var(--yellow);font-weight:700}
 .wpubrow{display:flex;align-items:center;gap:14px;margin-top:6px}
 .wpubrow .wname{margin:0 0 2px}
+.pillgrp{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.pill.ch{color:var(--fg);border-color:var(--line);background:var(--surface2)}
+#sheet .rows{background:var(--surface2)}
+.psub{margin:0 0 12px;color:var(--muted);font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px}
+.lt{position:relative;height:40px;padding:0;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:800;font-size:15px;color:var(--fg)}
+.lt i{position:absolute;top:2px;right:4px;font-style:normal;font-size:9px;color:var(--accent);font-weight:800}
+.lt.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lt.on i{color:var(--accent-ink)}
+.lt:disabled{color:#46524a;background:transparent;cursor:default}
+.cal{background:var(--surface);border-radius:18px;padding:10px 12px 14px;margin-bottom:14px}
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.caltitle{font-family:var(--display);font-size:18px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.caltitle small{font-family:var(--body);font-size:12px;color:var(--muted);font-weight:700}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:8px}
+.wd{text-align:center;color:var(--muted);font-size:11px;font-weight:800;padding:4px 0}
+.day{position:relative;aspect-ratio:1;min-width:0;padding:0;border-radius:10px;border:1px solid transparent;background:none;color:#46524a;font-weight:700;font-size:14px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.day.has{background:var(--surface2);border-color:var(--line);color:var(--fg)}
+.day.has i{position:absolute;top:2px;right:4px;font-style:normal;font-size:10px;color:var(--accent);font-weight:800}
+.day.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.day.on i{color:var(--accent-ink)}
+.day.today:not(.on){outline:1px dashed var(--muted);outline-offset:-3px}
+.day:disabled{cursor:default}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin:4px 0 10px}
+.chbtn{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.chbtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chsum{margin:0 0 10px;color:var(--muted);font-weight:700;font-size:13px}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.scard{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.scard small{color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.scard b{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.2;color:var(--accent);overflow-wrap:anywhere}
+.scard span{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.scard.wide{grid-column:1/-1}
+.sbars{display:flex;flex-direction:column;gap:6px}
+.sb{display:grid;grid-template-columns:26px minmax(0,1fr) 30px;gap:10px;align-items:center}
+.sb b{font-family:var(--display);font-weight:400;color:var(--accent);text-align:center}
+.sb span{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.sbt{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
+.sbt i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.splash{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 46%,#0a3d17 0%,#031207 58%,#010603 100%);transition:opacity .55s ease,transform .55s ease;overflow:hidden}
+.splash.out{opacity:0;transform:scale(1.05);pointer-events:none}
+.sp-wrap{width:min(94vw,560px);animation:spIn 1.1s cubic-bezier(.2,.8,.2,1) both}
+.sp-img{display:block;width:100%;height:auto;-webkit-mask-image:radial-gradient(ellipse closest-side at center,#000 72%,transparent 100%);mask-image:radial-gradient(ellipse closest-side at center,#000 72%,transparent 100%);animation:spPulse 2.2s ease-in-out 1s infinite alternate}
+.sp-bar{width:min(56vw,240px);height:4px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:20px;animation:spFade .6s ease .5s both}
+.sp-bar i{display:block;height:100%;background:#36e07e;transform-origin:left;animation:spBar 2.3s ease-in-out .4s both}
+@keyframes spIn{from{opacity:0;transform:scale(.8) translateY(14px);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes spPulse{from{filter:drop-shadow(0 0 10px rgba(54,224,126,.25)) brightness(1)}to{filter:drop-shadow(0 0 30px rgba(54,224,126,.75)) brightness(1.12)}}
+@keyframes spBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes spFade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.sp-wrap,.sp-img,.sp-bar,.sp-bar i{animation:none!important}.splash{transition:opacity .3s}}
 .tile.cov{width:46px;height:66px;border-radius:8px}
 .tile.cov img{width:100%;height:100%;object-fit:cover;padding:0}
 .tile.cov.big{width:72px;height:104px;border-radius:10px}
@@ -281,6 +331,7 @@ html{background:var(--bg);padding-top:env(safe-area-inset-top,0px);padding-botto
 
 </head>
 <body>
+<div class="splash" id="splash" role="presentation"><div class="sp-wrap"><img class="sp-img" id="sp-img" src="splash.jpg" alt="Karasu Dub Studio"></div><div class="sp-bar"><i></i></div></div>
 <header class="top">
   <div class="brand">
     <span class="mark" aria-hidden="true"><img src="icon-192.png" alt=""></span>
@@ -329,6 +380,8 @@ function str(x){return typeof x==='string'?x.trim():''}
 function ico(p,s){s=s||22;return '<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'}
 var P={
   list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  person:'<circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.7 3.6-5.6 7-5.6s6.2 1.9 7 5.6"/>',
+  stats:'<path d="M5 20V11M12 20V4M19 20v-6"/>',
   series:'<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
   status:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>',
   pubs:'<path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6M9 10h.01M15 10h.01"/>',
@@ -343,7 +396,7 @@ var P={
 
 /* ---------- state ---------- */
 var S={v:1,updatedAt:0,manga:[],pubs:[]};
-var ui={page:'list',q:'',letter:null,date:null,sf:null};
+var ui={page:'list',q:'',letter:null,date:null,sf:null,cal:null};
 var PM=new Map();
 var persisted=false, cloud='pending', localOk=true, dbApi=null, base='', dbTimer=null;
 
@@ -354,13 +407,14 @@ function sanitize(d){
   var pubs=(Array.isArray(d.pubs)?d.pubs:[]).map(function(p){p=p||{};return {id:str(p.id)||uid(),name:str(p.name).slice(0,80),logo:okLogo(p.logo)}}).filter(function(p){return p.name});
   var ids=new Set(pubs.map(function(p){return p.id}));
   var manga=d.manga.map(function(m){m=m||{};
+    var chs=(Number.isInteger(m.chapters)&&m.chapters>0&&m.chapters<=300)?m.chapters:null;
     return {id:str(m.id)||uid(),title:str(m.title).slice(0,160),
       vol:(Number.isInteger(m.vol)&&m.vol>0)?m.vol:null,
       pubId:ids.has(m.pubId)?m.pubId:null,
       price:(typeof m.price==='number'&&isFinite(m.price)&&m.price>=0)?m.price:null,
       status:(m.status==='read'||m.status==='reading')?m.status:'unread',
       received:/^\d{4}-\d{2}-\d{2}$/.test(m.received||'')?m.received:today(),
-      cover:okCover(m.cover)};
+      cover:okCover(m.cover),author:str(m.author).slice(0,80),chapters:chs,chRead:okCh(m.chRead,chs)};
   }).filter(function(m){return m.title});
   return {v:1,updatedAt:Date.now(),manga:manga,pubs:pubs};
 }
@@ -469,11 +523,11 @@ function mTile(m,p){return m.cover?'<span class="tile cov"><img src="'+m.cover+'
 function tile(letter,pub){return '<span class="tile">'+(pub&&pub.logo?'<img src="'+pub.logo+'" alt="">':'<b>'+esc(String(letter).toUpperCase())+'</b>')+'</span>'}
 function rowHtml(i,m,right,mode){
   var p=PM.get(m.pubId);
-  return '<li class="row'+(mode==='pill'?' pillrow':(mode==='price'&&full(m).length>22?' stack':''))+'"><span class="idx">'+i+'</span><div class="main" data-a="hint">'+mTile(m,p)+
-    '<span class="meta"><span class="ttl">'+esc(full(m))+'</span><span class="sub">'+esc(p?p.name:'Без видавництва')+'</span></span></div>'+(right||'')+'</li>';
+  return '<li class="row'+(mode==='pill'?' pillrow':(mode==='price'&&full(m).length>22?' stack':''))+'"><span class="idx">'+i+'</span>'+(mode==='panel'?'<div class="main">':'<div class="main" data-a="hint">')+mTile(m,p)+
+    '<span class="meta"><span class="ttl">'+esc(full(m))+'</span><span class="sub">'+esc((p?p.name:'Без видавництва')+(m.author?' · '+m.author:''))+'</span></span></div>'+(right||'')+'</li>';
 }
 function dotHtml(m){return '<span class="dot '+m.status+'" title="'+STL[m.status]+'" role="img" aria-label="'+STL[m.status]+'"></span>'}
-function pillHtml(m){return '<button class="pill '+m.status+'" data-a="pop" data-id="'+m.id+'" aria-haspopup="menu">'+STL[m.status]+ico(P.chev,14)+'</button>'}
+function pillHtml(m){return '<span class="pillgrp"><button class="pill '+m.status+'" data-a="pop" data-id="'+m.id+'" aria-haspopup="menu">'+STL[m.status]+ico(P.chev,14)+'</button>'+(m.chapters&&m.status!=='unread'?'<button class="pill ch" data-a="chap" data-id="'+m.id+'">Розділи '+chSet(m).size+'/'+m.chapters+'</button>':'')+'</span>'}
 function emptyAll(){
   return '<div class="empty"><div class="spines" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h2>Полиця порожня</h2><p>Додайте перший том. Він одразу з’явиться у списку, серіях і статистиці.</p>'+
     '<div class="btns"><button class="btn" data-a="add">'+ico(P.plus,20)+' Додати мангу</button><button class="btn ghost" data-a="sample">Показати приклад</button><button class="btn quiet" data-a="restoreFile">Відновити з файлу</button></div></div>';
@@ -483,6 +537,137 @@ function listOrEmpty(items,mk){
   if(!S.manga.length)return emptyAll();
   if(!items.length)return emptyFound();
   return '<ul class="rows">'+items.map(mk).join('')+'</ul>';
+}
+
+/* ---------- authors, series panels, chapters, stats ---------- */
+var MONTHS=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+function allCh(n){var a=[];for(var i=1;i<=n;i++)a.push(i);return a}
+function okCh(a,n){if(!n||!Array.isArray(a))return [];var out=[];a.forEach(function(x){if(Number.isInteger(x)&&x>=1&&x<=n&&out.indexOf(x)<0)out.push(x)});return out.sort(function(p,q){return p-q})}
+function chSet(m){
+  if(!m.chapters)return new Set();
+  if(m.status==='read'&&!(m.chRead&&m.chRead.length))return new Set(allCh(m.chapters));
+  return new Set(m.chRead||[]);
+}
+function applyStatus(m,st){
+  m.status=st;
+  if(st==='unread')m.chRead=[];
+  else if(st==='read'&&m.chapters)m.chRead=allCh(m.chapters);
+}
+function authorList(){
+  var map=new Map();
+  S.manga.forEach(function(m){
+    var a=str(m.author),k=a?norm(a):'__none',g=map.get(k);
+    if(!g){g={key:k,name:a||'Автор не вказаний',items:[]};map.set(k,g)}
+    g.items.push(m);
+  });
+  var arr=Array.from(map.values());
+  arr.sort(function(a,b){if(a.key==='__none')return 1;if(b.key==='__none')return -1;return coll.compare(a.name,b.name)});
+  arr.forEach(function(g){g.items.sort(cmp)});
+  return arr;
+}
+function serCount(items){return new Set(items.map(function(m){return norm(m.title)})).size}
+function panelHtml(title,sub,items){
+  return '<div class="shead"><h3>'+esc(title)+'</h3>'+closeBtn()+'</div><p class="psub">'+esc(sub)+'</p><ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m),'panel')}).join('')+'</ul>';
+}
+function openAuthor(key){
+  var g=authorList().find(function(x){return x.key===key});if(!g)return;
+  sheetCtx={type:'panel'};
+  var n=g.items.length,s=serCount(g.items);
+  openSheet(panelHtml(g.name,n+' '+pl(n,['том','томи','томів'])+' · '+s+' '+pl(s,['серія','серії','серій'])+' у колекції',g.items));
+}
+function openSeries(key){
+  var g=seriesList().find(function(x){return norm(x.name)===key});if(!g)return;
+  sheetCtx={type:'panel'};
+  var n=g.items.length,rd=g.items.filter(function(m){return m.status==='read'}).length;
+  openSheet(panelHtml(g.name,n+' '+pl(n,['том','томи','томів'])+' у колекції · прочитано '+rd+' з '+n,g.items.slice().sort(cmp)));
+}
+
+/* chapters */
+var chCtx=null;
+function openChapters(id,want){
+  var m=S.manga.find(function(x){return x.id===id});if(!m||!m.chapters)return;
+  chCtx={id:id,n:m.chapters,sel:want==='read'?new Set(allCh(m.chapters)):chSet(m)};
+  sheetCtx={type:'chap'};
+  var b='';for(var i=1;i<=m.chapters;i++)b+='<button type="button" class="chbtn" data-a="chTog" data-v="'+i+'" aria-pressed="false">'+i+'</button>';
+  openSheet('<div class="shead"><h3>Прочитані розділи</h3>'+closeBtn()+'</div><p class="psub">'+esc(full(m))+'. Позначте розділи, які вже прочитано.</p>'+
+    '<div class="chgrid" id="chgrid">'+b+'</div><p class="chsum" id="chsum"></p>'+
+    '<div class="btns"><button type="button" class="btn quiet sm" data-a="chAll">Усі</button><button type="button" class="btn quiet sm" data-a="chNone">Жодного</button></div>'+
+    '<div class="btns" style="margin-top:12px"><button type="button" class="btn" data-a="chSave">Зберегти</button></div>');
+  chRefresh();
+}
+function chRefresh(){
+  if(!chCtx)return;
+  document.querySelectorAll('#chgrid .chbtn').forEach(function(b){var on=chCtx.sel.has(+b.dataset.v);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
+  var x=chCtx.sel.size,n=chCtx.n,el=$('#chsum');
+  if(el)el.textContent='Прочитано '+x+' з '+n+' · статус буде «'+(x===n?'Прочитано':'Читаю')+'»';
+}
+function chSave(){
+  if(!chCtx)return;
+  var m=S.manga.find(function(x){return x.id===chCtx.id});
+  if(m){m.chRead=Array.from(chCtx.sel).sort(function(a,b){return a-b});m.status=chCtx.sel.size===chCtx.n?'read':'reading';commit();toast('Статус: '+STL[m.status])}
+  chCtx=null;closeSheet();render(true);
+}
+
+/* statistics */
+function statCard(l,v,s,wide){return '<div class="scard'+(wide?' wide':'')+'"><small>'+esc(l)+'</small><b>'+esc(v)+'</b>'+(s?'<span>'+esc(s)+'</span>':'')+'</div>'}
+function statsHtml(){
+  var M=S.manga,n=M.length;
+  if(!n)return '<p class="psub">Додайте мангу, і тут з’явиться статистика.</p>';
+  var order=UA.concat(LAT,['#']),byL=new Map(),serL=new Map(),seen=new Set();
+  M.forEach(function(m){var L=firstLetter(m.title);byL.set(L,(byL.get(L)||0)+1);var k=norm(m.title);if(!seen.has(k)){seen.add(k);serL.set(L,(serL.get(L)||0)+1)}});
+  var arr=order.filter(function(l){return byL.has(l)}).map(function(l){return {l:l,n:byL.get(l),s:serL.get(l)||0}}).sort(function(a,b){return b.n-a.n||order.indexOf(a.l)-order.indexOf(b.l)});
+  var top=arr[0],emptyUA=UA.filter(function(l){return !byL.has(l)}).length;
+  var ser=seriesList(),auth=authorList().filter(function(g){return g.key!=='__none'});
+  var read=M.filter(function(m){return m.status==='read'}).length,reading=M.filter(function(m){return m.status==='reading'}).length;
+  var c=[];
+  c.push(statCard('Найбільше манг на літеру',top.l,top.n+' '+pl(top.n,['том','томи','томів'])+' · '+top.s+' '+pl(top.s,['серія','серії','серій'])));
+  c.push(statCard('Літер без манги',emptyUA+' з '+UA.length,'в українському алфавіті'));
+  c.push(statCard('У колекції',n+' '+pl(n,['том','томи','томів']),ser.length+' '+pl(ser.length,['серія','серії','серій'])));
+  c.push(statCard('Авторів і видавництв',auth.length+' · '+S.pubs.length,'авторів · видавництв'));
+  c.push(statCard('Прочитано',Math.round(read/n*100)+'%',read+' з '+n+' · читаю '+reading));
+  var chT=0,chR=0;M.forEach(function(m){if(m.chapters){chT+=m.chapters;chR+=chSet(m).size}});
+  if(chT)c.push(statCard('Розділи',chR+' з '+chT,'прочитано розділів'));
+  var pr=M.filter(function(m){return m.price!=null});
+  if(pr.length){
+    var tot=pr.reduce(function(s,m){return s+m.price},0);
+    var mx=pr.reduce(function(a,b){return b.price>a.price?b:a}),mn=pr.reduce(function(a,b){return b.price<a.price?b:a});
+    c.push(statCard('Вартість колекції',fmtMoney(Math.round(tot*100)/100),'середня ціна '+fmtMoney(Math.round(tot/pr.length*100)/100)));
+    c.push(statCard('Найдорожчий том',fmtMoney(mx.price),full(mx)));
+    c.push(statCard('Найдешевший том',fmtMoney(mn.price),full(mn)));
+  }
+  var bs=ser.reduce(function(a,b){return b.items.length>a.items.length?b:a});
+  c.push(statCard('Найбільша серія',bs.name,bs.items.length+' '+pl(bs.items.length,['том','томи','томів'])));
+  if(auth.length){var ta=auth.reduce(function(a,b){return b.items.length>a.items.length?b:a});c.push(statCard('Найбільше томів одного автора',ta.name,ta.items.length+' '+pl(ta.items.length,['том','томи','томів'])))}
+  var pc=new Map();M.forEach(function(m){if(m.pubId&&PM.has(m.pubId))pc.set(m.pubId,(pc.get(m.pubId)||0)+1)});
+  if(pc.size){var bp=Array.from(pc.entries()).sort(function(a,b){return b[1]-a[1]})[0];c.push(statCard('Головне видавництво',PM.get(bp[0]).name,bp[1]+' '+pl(bp[1],['том','томи','томів'])))}
+  var lg=M.reduce(function(a,b){return full(b).length>full(a).length?b:a});
+  c.push(statCard('Найдовша назва',full(lg),full(lg).length+' символів'));
+  var avgLen=Math.round(ser.reduce(function(s,g){return s+g.name.length},0)/ser.length);
+  c.push(statCard('Середня довжина назви серії',avgLen+' симв.',''));
+  var dc=new Map(),mc=new Map();M.forEach(function(m){dc.set(m.received,(dc.get(m.received)||0)+1);var k=m.received.slice(0,7);mc.set(k,(mc.get(k)||0)+1)});
+  var bd=Array.from(dc.entries()).sort(function(a,b){return b[1]-a[1]||(a[0]<b[0]?1:-1)})[0],bm=Array.from(mc.entries()).sort(function(a,b){return b[1]-a[1]||(a[0]<b[0]?1:-1)})[0];
+  c.push(statCard('Найбільше отримано за день',fmtDate(bd[0]),bd[1]+' '+pl(bd[1],['том','томи','томів'])));
+  var bmp=bm[0].split('-');c.push(statCard('Найактивніший місяць',MONTHS[+bmp[1]-1]+' '+bmp[0],bm[1]+' '+pl(bm[1],['том','томи','томів'])));
+  var top8=arr.slice(0,8),mxn=top8[0].n;
+  var bars='<h3 class="sec">Манга за літерами</h3><div class="sbars">'+top8.map(function(x){return '<div class="sb"><b>'+esc(x.l)+'</b><div class="sbt"><i style="width:'+Math.max(5,Math.round(x.n/mxn*100))+'%"></i></div><span>'+x.n+'</span></div>'}).join('')+'</div>';
+  return '<div class="sgrid">'+c.join('')+'</div>'+bars;
+}
+function openStats(){sheetCtx={type:'stats'};openSheet('<div class="shead"><h3>Статистика</h3>'+closeBtn()+'</div>'+statsHtml())}
+
+/* calendar */
+function pad2(n){return String(n).padStart(2,'0')}
+function calHtml(by){
+  var y=ui.cal.y,mo=ui.cal.m,first=(new Date(y,mo,1).getDay()+6)%7,days=new Date(y,mo+1,0).getDate(),prefix=y+'-'+pad2(mo+1)+'-',td=today(),total=0;
+  by.forEach(function(v,k){if(k.indexOf(y+'-'+pad2(mo+1))===0)total+=v});
+  var cells='';['Пн','Вт','Ср','Чт','Пт','Сб','Нд'].forEach(function(d){cells+='<span class="wd">'+d+'</span>'});
+  for(var i=0;i<first;i++)cells+='<span></span>';
+  for(var d=1;d<=days;d++){
+    var key=prefix+pad2(d),n=by.get(key)||0;
+    cells+='<button class="day'+(n?' has':'')+(key===ui.date?' on':'')+(key===td?' today':'')+'" data-a="date" data-v="'+key+'"'+(n?'':' disabled')+' aria-label="'+d+' '+MONTHS[mo].toLowerCase()+(n?', '+n+' '+pl(n,['том','томи','томів']):'')+'"><span>'+d+'</span>'+(n?'<i>'+n+'</i>':'')+'</button>';
+  }
+  return '<div class="cal"><div class="calhead"><button class="icon" data-a="calPrev" aria-label="Попередній місяць">'+ico('<path d="m15 6-6 6 6 6"/>')+'</button>'+
+    '<div class="caltitle">'+MONTHS[mo]+' '+y+'<small>'+(total?total+' '+pl(total,['том','томи','томів'])+' отримано':'нічого не отримано')+'</small></div>'+
+    '<button class="icon" data-a="calNext" aria-label="Наступний місяць">'+ico('<path d="m9 6 6 6-6 6"/>')+'</button></div><div class="calgrid">'+cells+'</div></div>';
 }
 
 var pages={
@@ -497,7 +682,16 @@ var pages={
       var n=g.items.length, one=(n===1&&g.items[0].vol==null);
       var rd=g.items.filter(function(m){return m.status==='read'}).length;
       var sub=(one?'Однотомник':n+' '+pl(n,['том','томи','томів']))+' · прочитано '+rd+' з '+n;
-      return '<li class="row"><span class="idx">'+(i+1)+'</span><div class="main static">'+(function(){var cv=g.items.find(function(x){return x.cover});return cv?mTile(cv,null):tile(g.name[0]||'?',null)})()+'<span class="meta"><span class="ttl">'+esc(g.name)+'</span><span class="sub">'+esc(sub)+'</span></span></div><span class="badge">'+n+'</span></li>';
+      return '<li class="row"><span class="idx">'+(i+1)+'</span><button class="main" data-a="seriesOpen" data-k="'+esc(norm(g.name))+'">'+(function(){var cv=g.items.find(function(x){return x.cover});return cv?mTile(cv,null):tile(g.name[0]||'?',null)})()+'<span class="meta"><span class="ttl">'+esc(g.name)+'</span><span class="sub">'+esc(sub)+'</span></span></button><span class="badge">'+n+'</span></li>';
+    })+'</div>';
+  },
+  authors:function(){
+    if(!S.manga.length)return '<div class="pg">'+emptyAll()+'</div>';
+    var q=ui.q.trim().toLowerCase();
+    var items=authorList().filter(function(g){return !q||g.name.toLowerCase().indexOf(q)>-1});
+    return '<div class="pg">'+listOrEmpty(items,function(g,i){
+      var n=g.items.length,s=serCount(g.items),cv=g.items.find(function(x){return x.cover});
+      return '<li class="row"><span class="idx">'+(i+1)+'</span><button class="main" data-a="authorOpen" data-k="'+esc(g.key)+'">'+(cv?mTile(cv,null):tile(g.key==='__none'?'?':g.name[0],null))+'<span class="meta"><span class="ttl">'+esc(g.name)+'</span><span class="sub">'+s+' '+pl(s,['серія','серії','серій'])+' · '+n+' '+pl(n,['том','томи','томів'])+'</span></span></button><span class="badge">'+n+'</span></li>';
     })+'</div>';
   },
   alpha:function(){
@@ -506,13 +700,14 @@ var pages={
     S.manga.forEach(function(m){var L=firstLetter(m.title);by.set(L,(by.get(L)||0)+1)});
     var letters=UA.concat(LAT,['#']);
     if(!ui.letter||!by.has(ui.letter))ui.letter=letters.filter(function(l){return by.has(l)})[0]||null;
-    var strip='<div class="strip" id="strip" role="group" aria-label="Літери">'+letters.map(function(l){
+    var top='<div class="pagehead"><h2>По алфавіту</h2><button class="btn ghost sm" data-a="stats">'+ico(P.stats,18)+' Статистика</button></div>';
+    var grid='<div class="letters" id="letters" role="group" aria-label="Літери">'+letters.map(function(l){
       var n=by.get(l)||0;
-      return '<button class="chip'+(l===ui.letter?' on':'')+'" data-a="letter" data-v="'+l+'"'+(n?'':' disabled')+'>'+l+(n?'<i>'+n+'</i>':'')+'</button>';
+      return '<button class="lt'+(l===ui.letter?' on':'')+'" data-a="letter" data-v="'+l+'"'+(n?'':' disabled')+'>'+l+(n?'<i>'+n+'</i>':'')+'</button>';
     }).join('')+'</div>';
     var items=visible(sorted().filter(function(m){return firstLetter(m.title)===ui.letter}));
-    var head='<div class="grouphead"><h2>'+esc(ui.letter||'')+'</h2><span>'+items.length+' '+pl(items.length,['манга','манги','манги'])+'</span></div>';
-    return '<div class="pg">'+strip+head+(items.length?'<ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m))}).join('')+'</ul>':emptyFound())+'</div>';
+    var head='<div class="grouphead" id="lhead"><h2>'+esc(ui.letter||'')+'</h2><span>'+items.length+' '+pl(items.length,['манга','манги','манги'])+'</span></div>';
+    return '<div class="pg">'+top+grid+'<div style="height:14px"></div>'+head+(items.length?'<ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m))}).join('')+'</ul>':emptyFound())+'</div>';
   },
   status:function(){
     var c={read:0,reading:0,unread:0};
@@ -558,12 +753,10 @@ var pages={
     S.manga.forEach(function(m){by.set(m.received,(by.get(m.received)||0)+1)});
     var dates=Array.from(by.keys()).sort().reverse();
     if(!ui.date||!by.has(ui.date))ui.date=dates[0];
-    var strip='<div class="strip" id="strip" role="group" aria-label="Дати отримання">'+dates.map(function(d){
-      return '<button class="chip'+(d===ui.date?' on':'')+'" data-a="date" data-v="'+d+'">'+fmtDate(d)+'<i>'+by.get(d)+'</i></button>';
-    }).join('')+'</div>';
+    if(!ui.cal){var cp=ui.date.split('-');ui.cal={y:+cp[0],m:+cp[1]-1}}
     var items=visible(sorted().filter(function(m){return m.received===ui.date}));
     var head='<div class="grouphead"><h2>'+fmtDate(ui.date)+'</h2><span>'+items.length+' '+pl(items.length,['манга','манги','манги'])+'</span></div>';
-    return '<div class="pg">'+strip+head+(items.length?'<ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m))}).join('')+'</ul>':emptyFound())+'</div>';
+    return '<div class="pg">'+calHtml(by)+head+(items.length?'<ul class="rows">'+items.map(function(m,i){return rowHtml(i+1,m,dotHtml(m))}).join('')+'</ul>':emptyFound())+'</div>';
   }
 };
 /* ---------- wheels: what to read / where to buy / how much to spend ---------- */
@@ -775,6 +968,7 @@ try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function()
 var TABS=[
   ['list','Список',ico(P.list)],
   ['series','Серії',ico(P.series)],
+  ['authors','Автори',ico(P.person)],
   ['alpha','По алфавіту','<span class="gl">А–Я</span>'],
   ['status','Статус',ico(P.status)],
   ['wheel','Колесо читання',ico(P.wheel)],
@@ -785,6 +979,7 @@ var TABS=[
 function headCount(){
   switch(ui.page){
     case 'series':return ['Серій',seriesList().length];
+    case 'authors':return ['Авторів',authorList().filter(function(g){return g.key!=='__none'}).length];
     case 'pubs':return ['Видавництв',S.pubs.length];
     case 'wheel':return wset.tab==='read'?['Непрочитано',S.manga.filter(function(m){return m.status==='unread'}).length]:wset.tab==='pub'?['Видавництв',S.pubs.length]:['Манга',S.manga.length];
     default:return ['Манга',S.manga.length];
@@ -1008,12 +1203,15 @@ function mangaSheet(d,editId){
     '<div class="shead"><h3>'+(editId?'Редагувати мангу':'Додати мангу')+'</h3>'+closeBtn()+'</div>'+
     '<form id="mform" novalidate>'+
       '<div class="fld"><label for="f-title">Назва манги</label><input id="f-title" type="text" list="titles" value="'+esc(d.title)+'" autocomplete="off" placeholder="Наприклад, Берсерк"></div>'+
+      '<div class="fld"><label for="f-author">Автор</label><input id="f-author" type="text" list="authorsdl" value="'+esc(d.author||'')+'" autocomplete="off" placeholder="Необов’язково"></div>'+
+      '<datalist id="authorsdl">'+authorList().filter(function(g){return g.key!=='__none'}).map(function(g){return '<option value="'+esc(g.name)+'"></option>'}).join('')+'</datalist>'+
       '<datalist id="titles">'+titles.map(function(t){return '<option value="'+esc(t)+'"></option>'}).join('')+'</datalist>'+
       '<div class="fld"><label for="f-vol">Номер тому</label><div class="volrow"><input id="f-vol" type="number" inputmode="numeric" min="1" step="1" value="'+(d.one?'':esc(d.vol))+'" placeholder="1"'+(d.one?' disabled':'')+'>'+
         '<label class="switch"><input type="checkbox" id="f-one"'+(d.one?' checked':'')+'><i></i>Однотомник</label></div></div>'+
       '<div class="fld"><label for="f-pub">Видавництво</label><div class="pubrow"><select id="f-pub">'+opts+'</select><button type="button" class="icon" data-a="pubFromManga" aria-label="Додати видавництво">'+ico(P.plus)+'</button></div></div>'+
       '<div class="two"><div class="fld"><label for="f-price">Ціна, грн</label><input id="f-price" type="number" inputmode="decimal" min="0" step="0.01" value="'+esc(d.price)+'" placeholder="0"></div>'+
       '<div class="fld"><label for="f-date">Отримано</label><input id="f-date" type="date" value="'+esc(d.received)+'"></div></div>'+
+      '<div class="fld"><label for="f-chap">Розділів у томі</label><input id="f-chap" type="number" inputmode="numeric" min="1" max="300" step="1" value="'+esc(d.chapters==null?'':d.chapters)+'" placeholder="Необов’язково"></div>'+
       (editId?'<div class="fld"><label for="f-status">Статус прочитання</label><select id="f-status">'+ST.map(function(x){return '<option value="'+x.k+'"'+(x.k===d.status?' selected':'')+'>'+x.l+'</option>'}).join('')+'</select></div>':'')+
       '<div class="fld"><span>Обкладинка</span><div class="coverrow"><span class="tile cov big" id="f-cover-prev">'+(formCover?'<img src="'+formCover+'" alt="Обкладинка">':'<b>+</b>')+'</span><div class="coverbtns"><label class="btn ghost sm" for="f-cam" tabindex="0">Сфотографувати</label><input id="f-cam" type="file" accept="image/*" capture="environment" hidden><label class="btn quiet sm" for="f-gal" tabindex="0">Обрати з галереї</label><input id="f-gal" type="file" accept="image/*" hidden><button type="button" class="link" data-a="rmCover">Прибрати обкладинку</button></div></div></div>'+
       '<p class="err" id="ferr" role="alert" hidden></p>'+
@@ -1024,11 +1222,11 @@ function mangaSheet(d,editId){
     editId?'#f-title':'#f-title');
 }
 function readMangaForm(){
-  return {title:$('#f-title').value,one:$('#f-one').checked,vol:$('#f-vol').value,pubId:$('#f-pub').value,price:$('#f-price').value,received:$('#f-date').value,cover:formCover,status:$('#f-status')?$('#f-status').value:null};
+  return {title:$('#f-title').value,one:$('#f-one').checked,vol:$('#f-vol').value,pubId:$('#f-pub').value,price:$('#f-price').value,received:$('#f-date').value,cover:formCover,status:$('#f-status')?$('#f-status').value:null,author:$('#f-author').value,chapters:$('#f-chap').value};
 }
 function openManga(id,draft){
   var m=id?S.manga.find(function(x){return x.id===id}):null;
-  var d=draft||(m?{title:m.title,vol:m.vol==null?'':m.vol,one:m.vol==null,pubId:m.pubId||'',price:m.price==null?'':m.price,received:m.received,cover:m.cover||null,status:m.status}:{title:'',vol:'',one:false,pubId:'',price:'',received:today(),cover:null,status:'unread'});
+  var d=draft||(m?{title:m.title,vol:m.vol==null?'':m.vol,one:m.vol==null,pubId:m.pubId||'',price:m.price==null?'':m.price,received:m.received,cover:m.cover||null,status:m.status,author:m.author||'',chapters:m.chapters==null?'':m.chapters}:{title:'',vol:'',one:false,pubId:'',price:'',received:today(),cover:null,status:'unread',author:'',chapters:''});
   mangaSheet(d,id);
 }
 
@@ -1071,20 +1269,23 @@ function submitManga(mode){
   }
   var dup=S.manga.some(function(x){return x.id!==editId&&norm(x.title)===norm(title)&&(x.vol==null?null:x.vol)===vol});
   if(dup)return fail('Такий том уже є в колекції.','f-title');
+  var author=String(d.author||'').trim().replace(/\s+/g,' ').slice(0,80);
+  var chap=null;
+  if(String(d.chapters).trim()!==''){var cn=Number(d.chapters);if(!Number.isInteger(cn)||cn<1||cn>300)return fail('Розділів у томі: ціле число від 1 до 300.','f-chap');chap=cn}
   var rec=d.received||today();
   var pubId=d.pubId&&PM.has(d.pubId)?d.pubId:null;
   if(editId){
     var m=S.manga.find(function(x){return x.id===editId});
-    if(m){m.title=title;m.vol=vol;m.pubId=pubId;m.price=price;m.received=rec;m.cover=d.cover||null;if(d.status==='read'||d.status==='reading'||d.status==='unread')m.status=d.status}
+    if(m){m.title=title;m.vol=vol;m.pubId=pubId;m.price=price;m.received=rec;m.cover=d.cover||null;m.author=author;m.chapters=chap;m.chRead=okCh(m.chRead||[],chap);if(d.status==='read'||d.status==='reading'||d.status==='unread'){if(d.status!==m.status)applyStatus(m,d.status)}if(m.status==='read'&&chap)m.chRead=allCh(chap)}
     toast('Збережено');
   }else{
-    S.manga.push({id:uid(),title:title,vol:vol,pubId:pubId,price:price,status:'unread',received:rec,cover:d.cover||null});
+    S.manga.push({id:uid(),title:title,vol:vol,pubId:pubId,price:price,status:'unread',received:rec,cover:d.cover||null,author:author,chapters:chap,chRead:[]});
     toast('Додано: '+(vol!=null?title+' Том '+vol:title));
   }
   commit();
   if(!editId&&mode==='next'&&vol!=null){
     render(true);
-    mangaSheet({title:title,vol:vol+1,one:false,pubId:pubId||'',price:price==null?'':price,received:rec,cover:null,status:'unread'},null);
+    mangaSheet({title:title,vol:vol+1,one:false,pubId:pubId||'',price:price==null?'':price,received:rec,cover:null,status:'unread',author:author,chapters:chap==null?'':chap},null);
     var b=$('#mform .btn');if(b)b.focus();
     return true;
   }
@@ -1235,11 +1436,26 @@ var A={
   tab:function(el){ui.page=el.dataset.v;saveUi();closePop();render()},
   add:function(){openManga(null)},
   edit:function(el){openManga(el.dataset.id)},
-  letter:function(el){ui.letter=el.dataset.v;render(true)},
-  date:function(el){ui.date=el.dataset.v;render(true)},
+  letter:function(el){ui.letter=el.dataset.v;render(true);var h=$('#lhead');if(h){try{h.scrollIntoView({block:'start',behavior:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}catch(e){}}},
+  date:function(el){ui.date=el.dataset.v;var p=ui.date.split('-');ui.cal={y:+p[0],m:+p[1]-1};render(true)},
   sf:function(el){ui.sf=ui.sf===el.dataset.v?null:el.dataset.v;render(true)},
   pop:function(el){var p=$('#pop');if(p&&p.dataset.for===el.dataset.id){closePop();return}openPop(el,el.dataset.id);var n=$('#pop');if(n)n.dataset.for=el.dataset.id},
-  setStatus:function(el){var m=S.manga.find(function(x){return x.id===el.dataset.id});if(m){m.status=el.dataset.v;commit();closePop();render(true)}},
+  setStatus:function(el){
+    var m=S.manga.find(function(x){return x.id===el.dataset.id});if(!m)return;
+    var st=el.dataset.v;closePop();
+    if(st!=='unread'&&m.chapters){openChapters(m.id,st);return}
+    applyStatus(m,st);commit();render(true);
+  },
+  chap:function(el){openChapters(el.dataset.id,null)},
+  chTog:function(el){if(!chCtx)return;var i=+el.dataset.v;if(chCtx.sel.has(i))chCtx.sel.delete(i);else chCtx.sel.add(i);chRefresh()},
+  chAll:function(){if(chCtx){chCtx.sel=new Set(allCh(chCtx.n));chRefresh()}},
+  chNone:function(){if(chCtx){chCtx.sel=new Set();chRefresh()}},
+  chSave:function(){chSave()},
+  authorOpen:function(el){openAuthor(el.dataset.k)},
+  seriesOpen:function(el){openSeries(el.dataset.k)},
+  stats:function(){openStats()},
+  calPrev:function(){var c=ui.cal;c.m--;if(c.m<0){c.m=11;c.y--}render(true)},
+  calNext:function(){var c=ui.cal;c.m++;if(c.m>11){c.m=0;c.y++}render(true)},
   addPub:function(){pubSheet({name:'',logo:null},null,null)},
   editPub:function(el){var p=S.pubs.find(function(x){return x.id===el.dataset.id});if(p)pubSheet(p,p.id,null)},
   pubFromManga:function(){stash={d:readMangaForm(),editId:sheetCtx.editId};pubSheet({name:'',logo:null},null,'manga')},
@@ -1344,6 +1560,15 @@ $('#q').addEventListener('input',function(){ui.q=this.value;render(true)});
 /* ---------- boot ---------- */
 var l=loadLocal();if(l)S=l;
 try{var pg=localStorage.getItem(UIKEY);if(pg&&pages[pg])ui.page=pg}catch(e){}
+(function(){
+  var sp=document.getElementById('splash');if(!sp)return;
+  if(/[?&]nosplash/.test(location.search)){sp.remove();return}
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,done=false,timer=0,img=document.getElementById('sp-img');
+  function end(){if(done)return;done=true;clearTimeout(timer);sp.classList.add('out');setTimeout(function(){if(sp.parentNode)sp.remove()},650)}
+  function start(){if(timer)return;timer=setTimeout(end,reduce?1000:2800)}
+  sp.addEventListener('click',end);
+  if(img.complete&&img.naturalWidth)start();else{img.addEventListener('load',start);img.addEventListener('error',start);setTimeout(start,2500)}
+})();
 render();
 initDb();
 loadStores();
